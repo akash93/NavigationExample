@@ -72,7 +72,7 @@ public class ListViewAdapter extends BaseAdapter {
      *                    this view to display the correct data, this method can create a new view.
      *                    Heterogeneous lists can specify their number of view types, so that this View is
      *                    always of the right type (see {@link #getViewTypeCount()} and
-     *                    {@link #getItemViewType(int)}).
+     *                    {@link #notifyDataSetChanged()}).
      * @param parent      The parent that this view will eventually be attached to
      * @return A View corresponding to the data at the specified position.
      */
@@ -80,28 +80,34 @@ public class ListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View rootView = convertView;
         final ListObject currentListObject = listItems.get(position);
-        RecyclerViewAdapter.ListObjectViewHolder viewHolder;
         if (rootView==null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             rootView = inflater.inflate(R.layout.list_item_layout,null);
-            viewHolder = new RecyclerViewAdapter.ListObjectViewHolder(rootView);
-            rootView.setTag(viewHolder);
-        }else{
-            viewHolder = (RecyclerViewAdapter.ListObjectViewHolder) rootView.getTag();
         }
 
-        viewHolder.imageView.setImageResource(currentListObject.getImageResource());
-        viewHolder.textTitle.setText(currentListObject.getTextTitle());
-        viewHolder.textContent.setText(currentListObject.getTextContent());
+        ImageView imageView = (ImageView) rootView.findViewById(R.id.image_view);
+        TextView textTitle = (TextView) rootView.findViewById(R.id.title_text);
+        TextView textContent = (TextView) rootView.findViewById(R.id.content_text);
+        ImageView bookmarkIcon = (ImageView) rootView.findViewById(R.id.iv_bookmark);
+
+        imageView.setImageResource(currentListObject.getImageResource());
+        textTitle.setText(currentListObject.getTextTitle());
+        textContent.setText(currentListObject.getTextContent());
         if (currentListObject.isBookmarked()){
-            viewHolder.bookmarkIcon.setImageResource(R.drawable.ic_bookmark_white_24dp);
+            bookmarkIcon.setImageResource(R.drawable.ic_bookmark_white_24dp);
         }else{
-            viewHolder.bookmarkIcon.setImageResource(R.drawable.ic_bookmark_outline_white_24dp);
+            bookmarkIcon.setImageResource(R.drawable.ic_bookmark_outline_white_24dp);
         }
-        viewHolder.bookmarkIcon.setOnClickListener(new View.OnClickListener() {
+        bookmarkIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 currentListObject.setIsBookmarked(!currentListObject.isBookmarked());
+                /**
+                 * {@link notifyDataSetChanged} should be called when a list Item updates
+                 * In this case we are updating the icon state on click
+                 * so this method will inform the adapter that the dataset has changed
+                 * and the adapter should refresh itself
+                 */
                 notifyDataSetChanged();
             }
         });
