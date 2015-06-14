@@ -101,6 +101,12 @@ public class ListViewAdapter extends BaseAdapter {
         viewHolder.bookmarkIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /**
+                 * {@link notifyDataSetChanged} should be called when a list Item updates
+                 * In this case we are updating the icon state on click
+                 * so this method will inform the adapter that the dataset has changed
+                 * and the adapter should refresh itself
+                 */
                 currentListObject.setIsBookmarked(!currentListObject.isBookmarked());
                 notifyDataSetChanged();
             }
